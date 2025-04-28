@@ -360,7 +360,6 @@ app.get('/transaction', function(req, res){
   }
 });
 
-
 app.get('/generateQR', async (req, res) => {
   try {
     // Fetch data from MongoDB
@@ -580,7 +579,6 @@ app.post("/api/bankDetails", async function(req, res) {
     res.status(500).send({ error: "Failed to update or retrieve bank details" });
   }
 });
-
 
 app.post('/log-out', function(req, res){
   req.session.destroy();
