@@ -40,7 +40,7 @@ mongoose.set('strictQuery', false);
 
 //
 mongoose.connect("mongodb://localhost:27017/infinityDB");
-// mongoose.connect("mongodb+srv://rajeshraja:Admin-12345@cluster0.iokyo.mongodb.net/InfiniteDB", {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_URI);
 
 const adminSchema = new mongoose.Schema({
   email: String,
