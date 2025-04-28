@@ -39,7 +39,7 @@ app.use(session({
 mongoose.set('strictQuery', false);
 
 //
-mongoose.connect("mongodb://localhost:27017/infinityDB");
+// mongoose.connect("mongodb://localhost:27017/infinityDB");
 mongoose.connect(process.env.MONGO_URI);
 
 const adminSchema = new mongoose.Schema({
