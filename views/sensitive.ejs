@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/logos/main-logo.png">
+  <link rel="icon" type="image/png" href="../assets/img/logos/main-logo.png">
+  <title>
+    NFT Click | Dashboard
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/3d17848b75.js" crossorigin="anonymous"></script>
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="assets/css/custom.css">
+  <link id="pagestyle" href="../assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
+</head>
+
+<body class="g-sidenav-show  bg-gray-100">
+  <main class="main-content position-relative max-height-vh-100 mt-1 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-bg navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+      <div class="py-1 ">
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <nav aria-label="breadcrumb">
+            <a href="/">
+              <img class="app-logo" src="assets/img/logos/logo.png" alt="Logo">
+              <span class="font-weight-bolder mb-0 text-dark">NFT Click</span>
+            </a>
+            </nav>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+      <%  if(typeof alert != 'undefined'){  %>
+
+          <div class="alert alert-<%= alert.alertType %> alert-dismissible fade show" role="alert">
+            <span> <%= alert.alert %> </span>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="alert" aria-label="Close">&times</button>
+          </div>
+
+      <%  } %>
+        <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+          <div class="">
+            <div class="col-12 text-center">
+              <div class="avatar avatar-xl text-center">
+                <img src="assets/img/small-logos/user-icon.png" class="user-icon" alt="">
+              </div>
+            </div>
+            <br>
+            <div class="col-12 text-center">
+              <div class="">
+
+                <h5 class="mb-1">
+                  Username: <span> <%= user.username %> </span>
+                </h5>
+                <p class="mb-0 font-weight-bold text-sm">
+                  Invitation code: <span> <%= user.sponsorID %> </span>
+                  <a href="https://api.whatsapp.com/send?text=https://NFT Click-trial.herokuapp.com/sign-up/<%= user.sponsorID %>">
+                    <i class="fa fa-share text-success"></i>
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <br>
+        </div>
+        <br>
+        <!-- User personal information -->
+        <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+          <div class="">
+            <h5 class="mb-1 text-center">
+              <u>
+                User information
+              </u>
+            </h5>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Email :
+              <span class="text-sm font-weight-bold text-right">
+                <%= user.email%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Sponsored by :
+              <span class="text-sm font-weight-bold float-right">
+                <%= user.inviteCode%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Sponsored on :
+              <span class="text-sm font-weight-bold float-right">
+                <%= user.time%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Package :
+              <span class="text-sm font-weight-bold float-right">
+                <%= user.status %>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Password :
+              <span class="text-sm font-weight-bold float-right">
+                <%= user.password %>
+              </span>
+             </p>
+            <br>
+          </div>
+
+        </div>
+        <br>
+        <!-- Bank details -->
+      <%  if(typeof bank != 'undefined'){  %>
+        <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+          <div class="">
+            <h5 class="mb-1 text-center">
+              <u>
+                Bank details
+              </u>
+            </h5>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Bank holders name :
+              <span class="text-sm font-weight-bold text-right">
+                <%= bank.name%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Bank account number :
+              <span class="text-sm font-weight-bold float-right">
+                <%= bank.accountNumber%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              Bank name :
+              <span class="text-sm font-weight-bold float-right">
+               <%= bank.bankName%>
+              </span>
+             </p>
+            <br>
+            <p class="text-sm font-weight-bold">
+              IFSC :
+              <span class="text-sm font-weight-bold float-right">
+               <%= bank.ifsc%>
+              </span>
+             </p>
+            <br>
+          </div>
+
+        </div>
+        <br>
+
+      <%  }  %>
+
+
+
+
+
+
+
+
+
+      <br>
+      <br><br><br>
+      </div>
+  </main>
+  <div class="fixed-plugin">
+    <a class="fixed-plugin-button-left  text-dark position-fixed px-3 py-2" href="/">
+      <i class="fa fa-home py-2"> </i>
+    </a>
+
+    <a class="fixed-plugin-button-center text-dark position-fixed px-3 py-2" href="/package">
+      <i class="fa fa-infinity py-2"> </i>
+    </a>
+    <a class="fixed-plugin-button-right position-fixed px-3 py-2" href="/profile">
+      <i class="fa fa-user py-2"> </i>
+    </a>
+
+  </div>
+  <!--   Core JS Files   -->
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/chartjs.min.js"></script>
+
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
+</body>
+
+</html>

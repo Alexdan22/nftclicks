@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/logos/main-logo.png">
+  <link rel="icon" type="image/png" href="../assets/img/logos/main-logo.png">
+  <title>
+    NFT Click | Dashboard
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/3d17848b75.js" crossorigin="anonymous"></script>
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="assets/css/custom.css">
+  <link id="pagestyle" href="../assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
+</head>
+
+<body class="g-sidenav-show  bg-gray-100">
+  <main class="main-content position-relative max-height-vh-100 mt-1 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-bg navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+      <div class="py-1 ">
+        <div class="collapse position-relative navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <nav aria-label="breadcrumb">
+            <div class="nav">
+              <a href="/imTheAdminAlright">
+                <img class="app-logo" src="assets/img/logos/logo.png" alt="Logo">
+                <span class="font-weight-bolder mb-0 text-dark">NFT Click</span>
+              </a>
+              <a href="/log-out" class="btn btn-danger badge log-out" data-toggle="modal" data-target="#exampleModalCenter">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            </div>
+            </nav>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <br>
+
+        <br>
+        <!-- Types of earnings -->
+        <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+          <div class="row gx-4">
+            <div class="col earnings" >
+              <p class="mb-0 font-weight-bold text-dark text-center">
+               <%=users%>
+              </p>
+              <p class="mb-1 text-dark font-weight-bold text-center">
+               Users
+              </p>
+            </div>
+            <div class="col my-auto earnings total-earnings">
+              <div class="h-100">
+                <p class="mb-0 font-weight-bold text-dark text-center">
+                  <%=leaders%>
+                </p>
+                <p class="mb-1 text-dark font-weight-bold text-center">
+                  Leaders
+                </p>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row gx-4">
+            <div class="col">
+              <p class="mb-0 font-weight-bold text-dark text-center">
+                <%=total%>
+              </p>
+              <p class="mb-1 text-dark font-weight-bold text-center">
+                Total Users
+              </p>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+          <div class="row">
+            <div class="d-grid gap-2 col-10 mx-auto">
+              <form class="" action="/users" method="post">
+                <input type="text" class="form-control" name="date" placeholder="Enter Date 'dd/mm/yyyy'">
+                <input type="text" required name="users" hidden class="form-control text-center" value="active">
+                <button type="submit" class="btn  btn-danger mt-2">Autobot</button>
+              </form>
+              <form class="" action="/users" method="post">
+                <input type="text" class="form-control" name="date" placeholder="Enter Date 'dd/mm/yyyy'">
+                <input type="text" required name="users" hidden class="form-control text-center" value="all">
+                <button type="submit" class="btn  btn-danger mt-2">Search by Date</button>
+              </form>
+              <form class="" action="/user-details" method="post">
+                <input type="text" oninput="this.value = this.value.toLowerCase()"  class="form-control" name="email" placeholder="Enter user email">
+                <button type="submit" class="btn  btn-danger mt-2">Search by Email</button>
+              </form>
+              <form class="" action="/user-details" method="post">
+                <input type="text" class="form-control" name="sponID" placeholder="Enter user sponsor ID">
+                <button type="submit" class="btn  btn-danger mt-2">Search by Sponsor ID</button>
+              </form>
+            </div>
+            <br>
+        </div>
+
+      </div>
+      <br>
+
+        <%   if(typeof withdrawals != 'undefined'){ %>
+              <div class="">
+                <div class="row">
+                  <div class="col">
+                    <div class="card ">
+                      <div class="card-header text-uppercase text-center">
+                        <h6>WITHDRAW</h6>
+                      </div>
+                      <div class=" card-body ">
+                        <!-- New withdrawal section -->
+                        <div class="row">
+                          <div class="col text-center">
+                          <%  withdrawals.forEach(function(request){ %>
+                             <div class="card">
+                               <div class="card-body ">
+                                 <form class="" action="/credit" method="POST">
+                                   <label for=""> name</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.name %>
+                                   </p>
+                                   <label for="">account number</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.accountNumber %>
+                                   </p>
+                                   <label for=""> email</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.email %>
+                                   </p>
+                                   <div class="">
+                                     <input type="text" name="email" hidden class="form-control text-center" value="<%=request.email %>">
+                                     <input type="text" name="success" hidden class="form-control text-center" value="yes">
+                                     <input type="text" name="payment_id" hidden class="form-control text-center" value="<%=request.payment_id %>">
+                                     <input type="text" name="date" hidden class="form-control text-center" value="<%=request.date %>">
+                                     <input type="text" name="amount" hidden class="form-control text-center" value="<%=request.amount %>">
+                                   </div>
+
+                                   <label for=""> ifsc</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.ifsc %>
+                                   </p>
+                                   <label for=""> amount</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.amount %>$
+                                   </p>
+                                   <label for=""> bankName</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.bankName %>
+                                   </p>
+                                   <label for=""> date</label>
+                                   <p class=" text-dark text-uppercase text-sm">
+                                     <%=request.date %>
+                                   </p>
+                                   <div class="col">
+                                     <button type="submit" class="btn btn-block badge text-uppercase text-center btn-success" name="button">success</button>
+                                   </div>
+                                 </form>
+                                 <br>
+                                   <div class="row">
+                                     <form class="" action="/credit" method="POST">
+                                       <div class="">
+                                         <input type="text" name="email" hidden class="form-control text-center" value="<%=request.email %>">
+                                         <input type="text" name="success" hidden class="form-control text-center" value="no">
+                                         <input type="text" name="payment_id" hidden class="form-control text-center" value="<%=request.payment_id %>">
+                                         <input type="text" name="date" hidden class="form-control text-center" value="<%=request.date %>">
+                                         <input type="text" name="amount" hidden class="form-control text-center" value="<%=request.amount %>">
+                                       </div>
+
+                                       <button type="submit" class="btn btn-block badge text-uppercase text-center btn-danger" name="button">Fail</button>
+                                     </form>
+                                   </div>
+                               </div>
+                             </div>
+                            <% }) %>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            <% } %>
+        <br>
+      <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
+        <div class="row">
+          <div class="d-grid gap-2 col-10 mx-auto">
+            <form class="" action="/sensitive" method="post">
+              <input type="text" oninput="this.value = this.value.toLowerCase()" class="form-control" name="email" placeholder="Enter Email">
+              <button type="submit" class="btn  btn-danger mt-2">Sensitive info</button>
+            </form>
+          </div>
+          <br>
+      </div>
+
+    </div>
+      <br>
+      <br><br><br>
+      </div>
+  </main>
+  <div class="fixed-plugin">
+    <a class="fixed-plugin-button-left  text-dark position-fixed px-3 py-2" href="/">
+      <i class="fa fa-home py-2"> </i>
+    </a>
+
+    <a class="fixed-plugin-button-center text-dark position-fixed px-3 py-2" href="/package">
+      <i class="fa fa-infinity py-2"> </i>
+    </a>
+    <a class="fixed-plugin-button-right text-primary position-fixed px-3 py-2" href="/profile">
+      <i class="fa fa-user py-2"> </i>
+    </a>
+
+
+  </div>
+  <!--   Core JS Files   -->
+  <script src="assets/vendor/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/chartjs.min.js"></script>
+
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
+</body>
+
+</html>

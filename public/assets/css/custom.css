@@ -1,0 +1,190 @@
+.app-logo{
+  width: 15%;
+}
+.active-icon{
+  bottom: 35px;
+}
+.fixed-plugin .fixed-plugin-button-left {
+  background: #fff;
+  border-radius: 50%;
+  bottom: 10px;
+  left: 30px;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+.fixed-plugin-button-right {
+  background: #fff;
+  border-radius: 50%;
+  bottom: 10px;
+  right: 30px;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+.fixed-plugin-button-center {
+  background: #fff;
+  border-radius: 50%;
+  bottom: 10px;
+  left: 45%;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+.fixed-plugin-button-right-active{
+  background: #fff;
+  border-radius: 50%;
+  bottom: 37px;
+  right: 30px;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+.fixed-plugin-button-center-active {
+  background: #fff;
+  border-radius: 50%;
+  bottom: 37px;
+  left: 45%;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+.fixed-plugin-button-left-active {
+  background: #fff;
+  border-radius: 50%;
+  bottom: 37px;
+  left: 30px;
+  font-size: 1.25rem;
+  z-index: 990;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+
+.active-home{
+  position: fixed;
+  text-align: center;
+  bottom: 7px;
+  left: 32px;
+  font-size: 1.15rem;
+  z-index: 990;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+.active-plan{
+  position: fixed;
+  text-align: center;
+  bottom: 7px;
+  left: 43.5%;
+  font-size: 1.15rem;
+  z-index: 990;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+.active-profile{
+  position: fixed;
+  text-align: center;
+  bottom: 7px;
+  right:  26px;
+  font-size: 1.15rem;
+  z-index: 990;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+
+::-webkit-scrollbar{
+    display: inherit;
+}
+.withdrawals{
+  background-color: #EEEEEE;
+}
+.vertical-menu {
+  border-radius: 7px;
+  width: 100%;
+  height: 300px;
+  overflow-y: scroll;
+  text-align: center;
+
+
+}
+.current-plan{
+  padding: 50px 0;
+}
+.bg-gradient-info {
+    background-image: linear-gradient(310deg, #FF008E 0%, #FC28FB 100%);
+}
+.text-gradient.text-info {
+    background-image: linear-gradient(310deg, #FF008E, #FC28FB);
+}
+.terms{
+  font-size: 13px;
+}
+.user-icon{
+  border-radius: 50%;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.70);
+}
+.total-earnings{
+  margin-left: 2%;
+  border-left: 1px solid rgba(0, 0, 0, 0.19);
+}
+.profile-settings{
+  right: 5px;
+}
+.log-out{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.withdrwal-amount{
+  display: block;
+  margin : 0 auto;
+
+  width: 80%;
+}
+.qr-img{
+  width: 100%;
+}
+.invite-friends{
+  width:100%;
+}
+.availble-balance{
+  padding-top: 10px;
+}
+.withdrawal-text{
+  padding-top: 5px;
+}
+.line-height{
+  line-height: 40px;
+  text-align: left;
+}
+.line-height-start{
+  margin-top: 10px;
+}
+.label{
+  left: 47%;
+}
+.content{
+  line-height: 40px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.curved-banner {
+  border-radius: 2rem; /* Adjust as needed */
+  width: 100%;
+  height: auto;
+}
