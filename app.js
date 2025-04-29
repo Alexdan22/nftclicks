@@ -759,7 +759,7 @@ app.post('/api/activate', async(req, res) =>{
             let updatedLimit = foundUser.limit + 10;
             await User.updateOne({email: foundUser.email}, {$set:{limit: updatedLimit}});
             await User.updateOne({email: foundUser.email}, {$set:{status:'Premium'}});
-            await Payment.updateOne({rrn: req.body.transaction_id}, {$set:{token: "redeemed"}});
+            await Payment.updateOne({rrn: req.body.transaction_id}, {$set:{status: "redeemed"}});
             res.status(200).send({
               alertType: "success",
               alert: "true",
