@@ -756,6 +756,8 @@ app.post('/api/activate', async(req, res) =>{
         if(foundUser.status === "Free"){
           if(foundPayment.amount === 1999){
             //Update status
+            let updatedLimit = foundUser.limit + 10;
+            await User.updateOne({email: foundUser.email}, {$set:{limit: updatedLimit}});
             await User.updateOne({email: foundUser.email}, {$set:{status:'Premium'}});
             await Payment.updateOne({rrn: req.body.transaction_id}, {$set:{token: "redeemed"}});
             res.status(200).send({
