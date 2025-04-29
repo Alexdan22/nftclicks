@@ -142,7 +142,7 @@
       <div class="card card-body blur shadow-blur mx-2 overflow-hidden">
         <div class="row gx-4">
           <div class="col">
-            <p class="mb-0 font-weight-bold text-dark text-center">
+            <p id="today" class="mb-0 font-weight-bold text-dark text-center">
                <%= user.earnings.today %>$
             </p>
             <p class="mb-1 text-dark font-weight-bold text-center">
@@ -151,7 +151,7 @@
           </div>
           <div class="col my-auto total-earnings">
             <div class="h-100">
-              <p class="mb-0 font-weight-bold text-dark text-center">
+              <p id="available" class="mb-0 font-weight-bold text-dark text-center">
                  <%= user.earnings.available %>$
               </p>
               <p class="mb-1 text-dark font-weight-bold text-center">
@@ -245,19 +245,20 @@
         });
     
         if (response.ok) {
-          const result = await response.json(); // or .text(), depending on your server response
-          console.log('Success:', result);
+          const result = await response.json();
           document.getElementById('alert').innerHTML = `
             
             <div class="alert alert-`+result.alertType+` alert-dismissible fade show" role="alert">
               <span> `+result.message+` </span>
               <button type="button" class="btn-close text-dark" data-bs-dismiss="alert" aria-label="Close">&times</button>
             </div>`
+          document.getElementById('today').innerHTML = result.earnings.today + "$";
+          document.getElementById('available').innerHTML = result.earnings.available + "$";
+          document.getElementById('upload-label').textContent = 'Choose Images';  
   
                 var div = document.getElementById("alert");
                 div.style.opacity = "1";
                 div.style.display = "block";
-          // You can also update your UI here without reload
         } else {
           const errorText = await response.json();
           document.getElementById('alert').innerHTML = `

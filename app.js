@@ -96,12 +96,19 @@ const userSchema = new mongoose.Schema({
 
 });
 const paymentSchema = new mongoose.Schema({
-  payment_id: String,
-  status: String,
-  amount: Number,
-  vpa: String,
-  rrn: String,
-  token: String
+    rrn: Number,
+    email: String,
+    amount: Number,
+    upi: String,
+    payment_id: { type: String, required: true, unique: true },
+    time:{
+      date: String,
+      month: String,
+      year: String,
+      minutes: String,
+      hour: String
+    },
+    status: String
 });
 const qrDataSchema = new mongoose.Schema({ text: String });
 
@@ -185,6 +192,7 @@ app.post('/upload-multiple', upload.array('images', 5), async (req, res) => {
       alertType: 'success',
       alert: 'true',
       message: 'Upload successful!',
+      earnings: user.earnings,
       remainingLimit: user.limit
     });
 
@@ -734,684 +742,51 @@ app.post('/withdraw', function(req, res){
   });
 });
 
-app.post('/activate', function(req, res){
+app.post('/api/activate', async(req, res) =>{
   if(!req.session.user){
     res.redirect('/sign-in');
   }else{
-    let d = new Date();
-    let year = d.getFullYear();
-    let month = d.getMonth() + 1;
-    let date = d.getDate();
-    let hour = d.getHours() ;
-    let minutes = d.getMinutes();
-    const updated = date + "/" + month + "/" + year;
-      Payment.findOne({rrn: req.body.transaction_id}, function(err, foundPayment){
-        if(foundPayment){
-          //Process the Payment
-          if(foundPayment.token === "Valid"){
-            //Check for User Plan
-            User.findOne({email: req.session.user.email}, function(err, foundUser){
-              if(err){
-                console.log(err);
-              }else{
-                if(foundUser.status === "None"){
-                  //Update status
-                  User.updateOne({email: foundUser.email}, {$set:{status:'User'}}, function(error){
-                    if(error){
-                      console.log(error);
-                    }
-                    else{
-                      Payment.updateOne({rrn: req.body.transaction_id}, {$set:{token: "Invalid"}}, function(err){
-                        if(err){
-                          console.log(err);
-                        }
-                      });
-                    }
-                  });
-                  User.updateOne({email: req.session.user.email},{$set:{time: updated }}, function(err){
-                    if(err){
-                      console.log(err);
-                    }
-                  });
-
-                  //referral
-                  User.findOne({sponsorID: foundUser.inviteCode}, function(error, upline){
-                    if(upline){
-                      if(upline.status != 'None'){
-                        const newValue = {
-                          total: upline.earnings.total + 10,
-                          available: upline.earnings.available + 10,
-                          referral: upline.earnings.referral + 10,
-                          level: upline.earnings.level,
-                          team: upline.earnings.team,
-                          autobot: upline.earnings.autobot
-                        }
-                        // Transaction update
-                        const transactions = upline.log;
-                        const newTransaction = {
-                          type: 'referral',
-                          amount: 10,
-                          level: 'Direct'
-                        };
-                        transactions.push(newTransaction);
-                        User.updateOne({email:upline.email}, {$set:{log:transactions}}, function(err){
-                          if(err){
-                            console.log(err);
-                          }
-                        });
-                        //Referral points
-                        User.updateOne({email:upline.email}, {$set:{earnings:newValue}}, function(err){
-                          if(err){
-                            console.log(err);
-                          }
-                        });
-                        //Level Income
-                        User.findOne({sponsorID: upline.inviteCode}, function(err, u1){
-                          if(u1){
-                            if(u1.status != 'None'){
-                              //Level 1
-                              const u1value = {
-                                total: u1.earnings.total + 1,
-                                available: u1.earnings.available + 1,
-                                referral: u1.earnings.referral,
-                                level: u1.earnings.level + 1,
-                                team: u1.earnings.team,
-                                autobot: u1.earnings.autobot
-                              }
-                              // Transaction update
-                              const u1tran = u1.log;
-                              const u1new = {
-                                type: 'level',
-                                amount: 1,
-                                level: 'level 1'
-                              };
-                              u1tran.push(u1new);
-                              User.updateOne({email:u1.email}, {$set:{log:u1tran}}, function(err){
-                                if(err){
-                                  console.log(err);
-                                }
-                              });
-                              //Referral points
-                              User.updateOne({email:u1.email}, {$set:{earnings:u1value}}, function(err){
-                                if(err){
-                                  console.log(err);
-                                }
-                              });
-                              User.findOne({sponsorID: u1.inviteCode}, function(err, u2){
-                                if(u2){
-                                  if(u2.status != 'None'){
-                                    const u2value = {
-                                      total: u2.earnings.total + 1,
-                                      available: u2.earnings.available + 1,
-                                      referral: u2.earnings.referral,
-                                      level: u2.earnings.level + 1,
-                                      team: u2.earnings.team,
-                                      autobot: u2.earnings.autobot
-                                    }
-                                    // Transaction update
-                                    const u2tran = u2.log;
-                                    const u2new = {
-                                      type: 'level',
-                                      amount: 1,
-                                      level: 'level 2'
-                                    };
-                                    u2tran.push(u2new);
-                                    User.updateOne({email:u2.email}, {$set:{log:u2tran}}, function(err){
-                                      if(err){
-                                        console.log(err);
-                                      }
-                                    });
-                                    //Referral points
-                                    User.updateOne({email:u2.email}, {$set:{earnings:u2value}}, function(err){
-                                      if(err){
-                                        console.log(err);
-                                      }
-                                    });
-                                    //Level 2
-                                    User.findOne({sponsorID: u2.inviteCode}, function(err, u3){
-                                      if(u3){
-                                        if(u3.status != 'None'){
-                                          //Level 3
-                                          const u3value = {
-                                            total: u3.earnings.total + 1,
-                                            available: u3.earnings.available + 1,
-                                            referral: u3.earnings.referral,
-                                            level: u3.earnings.level + 1,
-                                            team: u3.earnings.team,
-                                            autobot: u3.earnings.autobot
-                                          }
-                                          // Transaction update
-                                          const u3tran = u3.log;
-                                          const u3new = {
-                                            type: 'level',
-                                            amount: 1,
-                                            level: 'level 3'
-                                          };
-                                          u3tran.push(u3new);
-                                          User.updateOne({email:u3.email}, {$set:{log:u3tran}}, function(err){
-                                            if(err){
-                                              console.log(err);
-                                            }
-                                          });
-                                          //Referral points
-                                          User.updateOne({email:u3.email}, {$set:{earnings:u3value}}, function(err){
-                                            if(err){
-                                              console.log(err);
-                                            }
-                                          });
-                                          User.findOne({sponsorID: u3.inviteCode}, function(err, u4){
-                                            if(u4){
-                                              if(u4.status != 'None'){
-                                                //Level 4
-                                                const u4value = {
-                                                  total: u4.earnings.total + 1,
-                                                  available: u4.earnings.available + 1,
-                                                  referral: u4.earnings.referral,
-                                                  level: u4.earnings.level + 1,
-                                                  team: u4.earnings.team,
-                                                  autobot: u4.earnings.autobot
-                                                }
-                                                // Transaction update
-                                                const u4tran = u4.log;
-                                                const u4new = {
-                                                  type: 'level',
-                                                  amount: 1,
-                                                  level: 'level 4'
-                                                };
-                                                u4tran.push(u4new);
-                                                User.updateOne({email:u4.email}, {$set:{log:u4tran}}, function(err){
-                                                  if(err){
-                                                    console.log(err);
-                                                  }
-                                                });
-                                                //Referral points
-                                                User.updateOne({email:u4.email}, {$set:{earnings:u4value}}, function(err){
-                                                  if(err){
-                                                    console.log(err);
-                                                  }
-                                                });
-                                                User.findOne({sponsorID: u4.inviteCode}, function(err, u5){
-                                                  if(u5){
-                                                    if(u5.status != 'None'){
-                                                      //Level 5
-                                                      const u5value = {
-                                                        total: u5.earnings.total + 1,
-                                                        available: u5.earnings.available + 1,
-                                                        referral: u5.earnings.referral,
-                                                        level: u5.earnings.level + 1,
-                                                        team: u5.earnings.team,
-                                                        autobot: u5.earnings.autobot
-                                                      }
-                                                      // Transaction update
-                                                      const u5tran = u5.log;
-                                                      const u5new = {
-                                                        type: 'level',
-                                                        amount: 1,
-                                                        level: 'level 5'
-                                                      };
-                                                      u5tran.push(u5new);
-                                                      User.updateOne({email:u5.email}, {$set:{log:u5tran}}, function(err){
-                                                        if(err){
-                                                          console.log(err);
-                                                        }
-                                                      });
-                                                      //Referral points
-                                                      User.updateOne({email:u5.email}, {$set:{earnings:u5value}}, function(err){
-                                                        if(err){
-                                                          console.log(err);
-                                                        }
-                                                      });
-                                                      User.findOne({sponsorID: u5.inviteCode}, function(err, u6){
-                                                        if(u6){
-                                                          if(u6.status != 'None'){
-                                                            //Level 6
-                                                            const u6value = {
-                                                              total: u6.earnings.total + 1,
-                                                              available: u6.earnings.available + 1,
-                                                              referral: u6.earnings.referral,
-                                                              level: u6.earnings.level + 1,
-                                                              team: u6.earnings.team,
-                                                              autobot: u6.earnings.autobot
-                                                            }
-                                                            // Transaction update
-                                                            const u6tran = u6.log;
-                                                            const u6new = {
-                                                              type: 'level',
-                                                              amount: 1,
-                                                              level: 'level 6'
-                                                            };
-                                                            u6tran.push(u6new);
-                                                            User.updateOne({email:u6.email}, {$set:{log:u6tran}}, function(err){
-                                                              if(err){
-                                                                console.log(err);
-                                                              }
-                                                            });
-                                                            //Referral points
-                                                            User.updateOne({email:u6.email}, {$set:{earnings:u6value}}, function(err){
-                                                              if(err){
-                                                                console.log(err);
-                                                              }
-                                                            });
-                                                            User.findOne({sponsorID: u6.inviteCode}, function(err, u7){
-                                                              if(u7){
-                                                                if(u7.status != 'None'){
-                                                                  //Level 7
-                                                                  const u7value = {
-                                                                    total: u7.earnings.total + 1,
-                                                                    available: u7.earnings.available + 1,
-                                                                    referral: u7.earnings.referral,
-                                                                    level: u7.earnings.level + 1,
-                                                                    team: u7.earnings.team,
-                                                                    autobot: u7.earnings.autobot
-                                                                  }
-                                                                  // Transaction update
-                                                                  const u7tran = u7.log;
-                                                                  const u7new = {
-                                                                    type: 'level',
-                                                                    amount: 1,
-                                                                    level: 'level 7'
-                                                                  };
-                                                                  u7tran.push(u7new);
-                                                                  User.updateOne({email:u7.email}, {$set:{log:u7tran}}, function(err){
-                                                                    if(err){
-                                                                      console.log(err);
-                                                                    }
-                                                                  });
-                                                                  //Referral points
-                                                                  User.updateOne({email:u7.email}, {$set:{earnings:u7value}}, function(err){
-                                                                    if(err){
-                                                                      console.log(err);
-                                                                    }
-                                                                  });
-                                                                  User.findOne({sponsorID: u7.inviteCode}, function(err, u8){
-                                                                    if(u8){
-                                                                      if(u8.status != 'None'){
-                                                                        //Level 8
-                                                                        const u8value = {
-                                                                          total: u8.earnings.total + 1,
-                                                                          available: u8.earnings.available + 1,
-                                                                          referral: u8.earnings.referral,
-                                                                          level: u8.earnings.level + 1,
-                                                                          team: u8.earnings.team,
-                                                                          autobot: u8.earnings.autobot
-                                                                        }
-                                                                        // Transaction update
-                                                                        const u8tran = u8.log;
-                                                                        const u8new = {
-                                                                          type: 'level',
-                                                                          amount: 1,
-                                                                          level: 'level 8'
-                                                                        };
-                                                                        u8tran.push(u8new);
-                                                                        User.updateOne({email:u8.email}, {$set:{log:u8tran}}, function(err){
-                                                                          if(err){
-                                                                            console.log(err);
-                                                                          }
-                                                                        });
-                                                                        //Referral points
-                                                                        User.updateOne({email:u8.email}, {$set:{earnings:u8value}}, function(err){
-                                                                          if(err){
-                                                                            console.log(err);
-                                                                          }
-                                                                        });
-                                                                        User.findOne({sponsorID: u8.inviteCode}, function(err, u9){
-                                                                          if(u9){
-                                                                            if(u9.status != 'None'){
-                                                                              //Level 9
-                                                                              const u9value = {
-                                                                                total: u9.earnings.total + 1,
-                                                                                available: u9.earnings.available + 1,
-                                                                                referral: u9.earnings.referral,
-                                                                                level: u9.earnings.level + 1,
-                                                                                team: u9.earnings.team,
-                                                                                autobot: u9.earnings.autobot
-                                                                              }
-                                                                              // Transaction update
-                                                                              const u9tran = u9.log;
-                                                                              const u9new = {
-                                                                                type: 'level',
-                                                                                amount: 1,
-                                                                                level: 'level 9'
-                                                                              };
-                                                                              u9tran.push(u9new);
-                                                                              User.updateOne({email:u9.email}, {$set:{log:u9tran}}, function(err){
-                                                                                if(err){
-                                                                                  console.log(err);
-                                                                                }
-                                                                              });
-                                                                              //Referral points
-                                                                              User.updateOne({email:u9.email}, {$set:{earnings:u9value}}, function(err){
-                                                                                if(err){
-                                                                                  console.log(err);
-                                                                                }
-                                                                              });
-                                                                              User.findOne({sponsorID: u9.inviteCode}, function(err, u10){
-                                                                                if(u10){
-                                                                                  if(u10.status != 'None'){
-                                                                                    //Level 10
-                                                                                    const u10value = {
-                                                                                      total: u10.earnings.total + 1,
-                                                                                      available: u10.earnings.available + 1,
-                                                                                      referral: u10.earnings.referral,
-                                                                                      level: u10.earnings.level + 1,
-                                                                                      team: u10.earnings.team,
-                                                                                      autobot: u10.earnings.autobot
-                                                                                    }
-                                                                                    // Transaction update
-                                                                                    const u10tran = u10.log;
-                                                                                    const u10new = {
-                                                                                      type: 'level',
-                                                                                      amount: 1,
-                                                                                      level: 'level 10'
-                                                                                    };
-                                                                                    u10tran.push(u10new);
-                                                                                    User.updateOne({email:u10.email}, {$set:{log:u10tran}}, function(err){
-                                                                                      if(err){
-                                                                                        console.log(err);
-                                                                                      }
-                                                                                    });
-                                                                                    //Referral points
-                                                                                    User.updateOne({email:u10.email}, {$set:{earnings:u10value}}, function(err){
-                                                                                      if(err){
-                                                                                        console.log(err);
-                                                                                      }
-                                                                                    });
-
-                                                                                  }
-                                                                                }
-                                                                              })
-                                                                            }
-                                                                          }
-                                                                        });
-                                                                      }
-                                                                    }
-                                                                  });
-                                                                }
-                                                              }
-                                                            });
-                                                          }
-                                                        }
-                                                      });
-                                                    }
-                                                  }
-                                                });
-                                              }
-                                            }
-                                          });
-                                        }
-                                      }
-                                    });
-                                  }
-                                }
-                              });
-                            }
-                          }
-                        });
-                      }
-                    }
-                  });
-
-                  res.render('payment-portal', {user: foundUser, alert:{alertType:'success', alert:'ID activation Successfull.'}});
-                }else{
-                  //For Upgrade Plan
-                  if(foundPayment.amount !== 3200){
-                    User.updateOne({email: req.session.user.email},{$set:{status: "Leader"}}, function(err){
-                      if(err){
-                        console.log(err);
-                      }
-                      else{
-                        Payment.updateOne({rrn: req.body.transaction_id}, {$set:{token: "Invalid"}}, function(err){
-                          if(err){
-                            console.log(err);
-                          }
-                        });
-                      }
-                    });
-                    //  Referral points
-                    User.findOne({sponsorID: foundUser.inviteCode}, function(error, upline){
-                      if(upline){
-                        if(upline.status == 'Leader'){
-                          const newValue = {
-                            total: upline.earnings.total + 20,
-                            available: upline.earnings.available + 20,
-                            referral: upline.earnings.referral + 20,
-                            level: upline.earnings.level,
-                            team: upline.earnings.team,
-                            autobot: upline.earnings.autobot
-                          }
-                          // Transaction update
-                          const transactions = upline.log;
-                          const newTransaction = {
-                            type: 'upgrade',
-                            amount: 20,
-                            level: 'Direct'
-                          };
-                          transactions.push(newTransaction);
-                          User.updateOne({email:upline.email}, {$set:{log:transactions}}, function(err){
-                            if(err){
-                              console.log(err);
-                            }
-                          });
-                          //Referral points
-                          User.updateOne({email:upline.email}, {$set:{earnings:newValue}}, function(err){
-                            if(err){
-                              console.log(err);
-                            }
-                          });
-                          //Level Income
-                          User.findOne({sponsorID: upline.inviteCode}, function(err, u1){
-                            if(u1){
-                              if(u1.status == 'Leader'){
-                                //Level 1
-                                const u1value = {
-                                  total: u1.earnings.total + 5,
-                                  available: u1.earnings.available + 5,
-                                  referral: u1.earnings.referral,
-                                  level: u1.earnings.level,
-                                  team: u1.earnings.team + 5,
-                                  autobot: u1.earnings.autobot
-                                }
-                                // Transaction update
-                                const u1tran = u1.log;
-                                const u1new = {
-                                  type: 'level',
-                                  amount: 5,
-                                  level: 'level 1'
-                                };
-                                u1tran.push(u1new);
-                                User.updateOne({email:u1.email}, {$set:{log:u1tran}}, function(err){
-                                  if(err){
-                                    console.log(err);
-                                  }
-                                });
-                                //Referral points
-                                User.updateOne({email:u1.email}, {$set:{earnings:u1value}}, function(err){
-                                  if(err){
-                                    console.log(err);
-                                  }
-                                });
-                                User.findOne({sponsorID: u1.inviteCode}, function(err, u2){
-                                  if(u2){
-                                    if(u2.status == 'Leader'){
-                                      const u2value = {
-                                        total: u2.earnings.total + 5,
-                                        available: u2.earnings.available + 5,
-                                        referral: u2.earnings.referral,
-                                        level: u2.earnings.level,
-                                        team: u2.earnings.team + 5,
-                                        autobot: u2.earnings.autobot
-                                      }
-                                      // Transaction update
-                                      const u2tran = u2.log;
-                                      const u2new = {
-                                        type: 'level',
-                                        amount: 5,
-                                        level: 'level 2'
-                                      };
-                                      u2tran.push(u2new);
-                                      User.updateOne({email:u2.email}, {$set:{log:u2tran}}, function(err){
-                                        if(err){
-                                          console.log(err);
-                                        }
-                                      });
-                                      //Referral points
-                                      User.updateOne({email:u2.email}, {$set:{earnings:u2value}}, function(err){
-                                        if(err){
-                                          console.log(err);
-                                        }
-                                      });
-                                      //Level 2
-                                      User.findOne({sponsorID: u2.inviteCode}, function(err, u3){
-                                        if(u3){
-                                          if(u3.status == 'Leader'){
-                                            //Level 3
-                                            const u3value = {
-                                              total: u3.earnings.total + 5,
-                                              available: u3.earnings.available + 5,
-                                              referral: u3.earnings.referral,
-                                              level: u3.earnings.level,
-                                              team: u3.earnings.team + 5,
-                                              autobot: u3.earnings.autobot
-                                            }
-                                            // Transaction update
-                                            const u3tran = u3.log;
-                                            const u3new = {
-                                              type: 'level',
-                                              amount: 5,
-                                              level: 'level 3'
-                                            };
-                                            u3tran.push(u3new);
-                                            User.updateOne({email:u3.email}, {$set:{log:u3tran}}, function(err){
-                                              if(err){
-                                                console.log(err);
-                                              }
-                                            });
-                                            //Referral points
-                                            User.updateOne({email:u3.email}, {$set:{earnings:u3value}}, function(err){
-                                              if(err){
-                                                console.log(err);
-                                              }
-                                            });
-                                            User.findOne({sponsorID: u3.inviteCode}, function(err, u4){
-                                              if(u4){
-                                                if(u4.status == 'Leader'){
-                                                  //Level 4
-                                                  const u4value = {
-                                                    total: u4.earnings.total + 5,
-                                                    available: u4.earnings.available + 5,
-                                                    referral: u4.earnings.referral,
-                                                    level: u4.earnings.level,
-                                                    team: u4.earnings.team + 5,
-                                                    autobot: u4.earnings.autobot
-                                                  }
-                                                  // Transaction update
-                                                  const u4tran = u4.log;
-                                                  const u4new = {
-                                                    type: 'level',
-                                                    amount: 5,
-                                                    level: 'level 4'
-                                                  };
-                                                  u4tran.push(u4new);
-                                                  User.updateOne({email:u4.email}, {$set:{log:u4tran}}, function(err){
-                                                    if(err){
-                                                      console.log(err);
-                                                    }
-                                                  });
-                                                  //Referral points
-                                                  User.updateOne({email:u4.email}, {$set:{earnings:u4value}}, function(err){
-                                                    if(err){
-                                                      console.log(err);
-                                                    }
-                                                  });
-                                                  User.findOne({sponsorID: u4.inviteCode}, function(err, u5){
-                                                    if(u5){
-                                                      if(u5.status == 'Leader'){
-                                                        //Level 5
-                                                        const u5value = {
-                                                          total: u5.earnings.total + 5,
-                                                          available: u5.earnings.available + 5,
-                                                          referral: u5.earnings.referral,
-                                                          level: u5.earnings.level,
-                                                          team: u5.earnings.team + 5,
-                                                          autobot: u5.earnings.autobot
-                                                        }
-                                                        // Transaction update
-                                                        const u5tran = u5.log;
-                                                        const u5new = {
-                                                          type: 'level',
-                                                          amount: 5,
-                                                          level: 'level 5'
-                                                        };
-                                                        u5tran.push(u5new);
-                                                        User.updateOne({email:u5.email}, {$set:{log:u5tran}}, function(err){
-                                                          if(err){
-                                                            console.log(err);
-                                                          }
-                                                        });
-                                                        //Referral points
-                                                        User.updateOne({email:u5.email}, {$set:{earnings:u5value}}, function(err){
-                                                          if(err){
-                                                            console.log(err);
-                                                          }
-                                                        });
-                                                      }
-                                                    }
-                                                  });
-                                                }
-                                              }
-                                            });
-                                          }
-                                        }
-                                      });
-                                    }
-                                  }
-                                });
-                              }
-                            }
-                          });
-                        }
-                      }
-                    });
-                      const alert = "Upgrade Successfull."
-                      const alertType = "success"
-                      res.render("payment-portal", {alert:{alert, alertType}, user:foundUser});
-                  }else{
-                    const alert = "Please check the paid amount is 50$"
-                    const alertType = "warning"
-                    res.render("payment-portal", {alert:{alert, alertType}, user:foundUser});
-                  }
-
-                }
-              }
+    
+    const foundPayment = await Payment.findOne({rrn: req.body.transaction_id});
+    const foundUser = await User.findOne({email: req.session.user.email});
+    if(foundPayment){
+      //Process the Payment
+      if(foundPayment.status === "captured"){
+        //Check for User Plan
+        if(foundUser.status === "Free"){
+          if(foundPayment.amount === 1999){
+            //Update status
+            await User.updateOne({email: foundUser.email}, {$set:{status:'Premium'}});
+            await Payment.updateOne({rrn: req.body.transaction_id}, {$set:{token: "redeemed"}});
+            res.status(200).send({
+              alertType: "success",
+              alert: "true",
+              message: "Payment successful, plan activated"
             });
           }else{
-            //Payment ID already been used
-            User.findOne({email:req.session.user.email}, function(err, foundUser){
-              if(err){
-                console.log(err);
-              }else {
-                const alert = "Payment ID has already been validated."
-                const alertType = "warning"
-
-                res.render("payment-portal", {alert:{alert, alertType}, user:foundUser});
-
-              }
-            });
+            res.status(200).send({
+              alertType: "danger",
+              alert: "true",
+              message: "Invalid amount"
+            }); 
           }
-        }else{
-          //No transaction ID found
-          User.findOne({email:req.session.user.email}, function(err, foundUser){
-            if(err){
-              console.log(err);
-            }else {
-              const alert = "Invalid transaction ID"
-              const alertType = "danger"
-
-              res.render("payment-portal", {alert:{alert, alertType}, user:foundUser});
-            }
-          });
         }
+      }else{
+        res.status(200).send({
+          alertType: "warning",
+          alert: "true",
+          message: "Payment ID has already been validated."
+        });
+
+      }
+    }else{
+      //No transaction ID found
+      res.status(200).send({
+        alertType: "danger",
+        alert: "true",
+        message: "Invalid transaction ID"
       });
+    }
 
 
 

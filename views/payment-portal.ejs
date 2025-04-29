@@ -70,11 +70,12 @@
               <img class="text-center scanner_img" id="qrcode" alt="">
             </div>
             <p class="text-left text-center line-height-start line-height text-sm">Scan the QR code and complete the transaction </p>
-            <form class="" action="/activate" method="post">
+            <div id="alert"></div>
+            <form>
                <div class="d-grid gap-2 col-10 mx-auto">
-                   <input type="text" class="form-control" name="transaction_id" placeholder="Enter transaction ID">
+                   <input type="text" class="form-control" id="transaction_id" name="transaction_id" placeholder="Enter transaction ID">
                  <div class="ps-7">
-                   <button type="submit" class="btn  btn-danger">Subscribe</button>
+                   <button type="button" onclick="paymentVerification()" class="btn  btn-danger">Subscribe</button>
                  </div>
                </div>
              </form>
@@ -93,11 +94,11 @@
             </div>
            <p class="text-left text-center font-weight-bold  line-height-start line-height text-dark text-sm">Complete transaction and enter the transaction ID </p>
            <div class="row">
-             <form class="" action="/activate" method="post">
+             <form >
                <div class="d-grid gap-2 col-10 mx-auto">
-                   <input type="text" class="form-control" name="transaction_id" placeholder="Enter transaction ID">
+                   <input type="text" class="form-control" id="transaction_id" name="transaction_id" placeholder="Enter transaction ID">
                  <div class="ps-7">
-                   <button type="submit" disabled class="btn  btn-danger">Active</button>
+                   <button type="button" onclick="paymentVerification()" disabled class="btn  btn-danger">Active</button>
                  </div>
                </form>
                </div>
@@ -127,6 +128,7 @@
   </div>
   <!--   Core JS Files   -->
   <script src="assets/vendor/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../assets/js/core/popper.min.js"></script>
   <script src="../assets/js/core/bootstrap.min.js"></script>
   <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
@@ -145,6 +147,48 @@
     }
 
     window.addEventListener("load", fetchQR);
+  </script>
+  <script>
+    //Payment verification
+    const paymentVerification = function(){
+
+    transaction_id = document.getElementById('transaction_id').value
+    $.ajax({
+      url: '/api/activate',
+      // dataType: "jsonp",
+      data: {
+        transaction_id: transaction_id
+      },
+      type: 'POST',
+      success: function (data) {
+        if( data.redirect == undefined){
+          if(data.alert == 'true'){
+            
+            document.getElementById('alert').innerHTML = `
+            
+          <div class="alert alert-`+data.alertType+` alert-dismissible fade show" role="alert">
+            <span> `+data.message+` </span>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="alert" aria-label="Close">&times</button>
+          </div>`
+
+              var div = document.getElementById("alert");
+              div.style.opacity = "1";
+              div.style.display = "block";
+
+          }
+          if(data.alertType == 'success'){
+          dashboard2000();
+          }
+        }else{
+          login2000();
+        }
+
+      },
+      error: function (status, error) {
+        console.log('Error: ' + error.message);
+      }
+    });
+    }
   </script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
