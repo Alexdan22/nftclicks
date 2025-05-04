@@ -44,17 +44,21 @@ mongoose.connect(process.env.MONGO_URI);
 
 const adminSchema = new mongoose.Schema({
   email: String,
-  withdrawals: [{
-    name: String,
-    accountNumber: String,
-    email: String,
-    ifsc: String,
-    amount: String,
-    bankName: String,
-    date: String,
-    payment_id: String,
-    from: String
-  }]
+  withdrawal:[
+    {
+      trnxId: String,
+      email: String,
+      amount: Number,
+      username: String,
+      time:{
+        date: String,
+        month: String,
+        year: String,
+        minutes: String,
+        hour: String
+      },
+    }
+  ],
 });
 const earningsSchema = new mongoose.Schema({
   total: Number,
@@ -593,153 +597,80 @@ app.post('/log-out', function(req, res){
   res.redirect("/sign-in");
 });
 
-app.post('/withdraw', function(req, res){
+app.post('/api/withdraw', async (req, res) =>{
   let d = new Date();
   let year = d.getFullYear();
   let month = d.getMonth() + 1;
   let date = d.getDate();
   let hour = d.getHours() ;
   let minutes = d.getMinutes();
-  const currentTime = hour + ":" + minutes;
+  
   const currentDate =  date + "/" + month + "/" + year;
-
-  User.findOne({email: req.session.user.email}, function(err, foundUser){
-    User.find({inviteCode: foundUser.sponsorID}, function(error, users){
-      const activeUsers = [];
-      const amt = Number(req.body.amount);
-      users.forEach(function(user){
-        if(user.status != 'None'){
-          activeUsers.push(user);
-        }
+  if(!req.session.user){
+    res.status(200).send({redirect: true});
+  }else{
+    const foundUser = await User.findOne({email: req.session.user.email});
+    if(!foundUser.bank){
+      //No bank account
+      return res.status(200).send({
+        alertType: "danger",
+        alert: "true",
+        message: "Please update bank details for withdrawal"
       });
-      if(activeUsers.length != 0){
-        //Has one referral
-        if(!foundUser.bank){
-          //No bank account
-          res.render("withdraw", {user: foundUser,  alert:{alertType:'danger', alert:'Please update bank details for withdrawal'}});
-        }else{
-          if(amt<2){
-            //Less than withdrawal limit
-            if(foundUser.bank){
-                res.render("withdraw", {user: foundUser, bank: foundUser.bank, alert:{alertType:'warning', alert:'Entered amount is below minimum withdrawal'}});
-            }else{
-                res.render("withdraw", {user: foundUser,  alert:{alertType:'warning', alert:'Entered amount is below minimum withdrawal'}});
-            }
-          }else{
-            if(amt>foundUser.earnings.available){
-              //Entered amount is more than available balance
-              if(foundUser.bank){
-                  res.render("withdraw", {user: foundUser, bank: foundUser.bank, alert:{alertType:'warning', alert:'Low balance, please enter valid amount'}});
-              }else{
-                  res.render("withdraw", {user: foundUser,  alert:{alertType:'warning', alert:'Low balance, please enter valid amount'}});
-              }
-            }else{
-              //process req
-              const newValue = {
-                total: foundUser.earnings.total,
-                available: foundUser.earnings.available - amt,
-                referral: foundUser.earnings.referral,
-                level: foundUser.earnings.level,
-                team: foundUser.earnings.team,
-                autobot: foundUser.earnings.autobot
-              }
-              // updating available balance
-              User.updateOne({email:foundUser.email}, {$set:{earnings:newValue }}, function(err){
-                if(err){
-                  console.log(err);
-                }
-              });
-              // History update
-              const random = "INF" + String(Math.floor(Math.random()*999999999999));
-              const history = foundUser.history;
-              const newHistory = {
-                status: "pending",
-                amount: req.body.amount,
-                time: date + "/" + month,
-                payment_id: random
-              };
-              history.push(newHistory);
-              User.updateOne({email:foundUser.email}, {$set:{history:history}}, function(err){
-                if(err){
-                  console.log(err);
-                }
-              });
-              // Transaction update
-              const transactions = foundUser.log;
-              const newTransaction = {
-                type: 'withdrawal',
-                amount: amt,
-                level: 'Wallet'
-              };
-              transactions.push(newTransaction);
-              User.updateOne({email:foundUser.email}, {$set:{log:transactions}}, function(err){
-                if(err){
-                  console.log(err);
-                }
-              });
-              // Admin panel requests
-              Admin.findOne({email: process.env.EMAIL}, function(err, admin){
-                if(err){
-                  console.log(err);
-                }else{
-                  if(admin.withdrawals){
-                    const withdrawal = admin.withdrawals;
-                    const newWithdraw = {
-                      name: foundUser.bank.name,
-                      email: foundUser.email,
-                      accountNumber: foundUser.bank.accountNumber,
-                      ifsc: foundUser.bank.ifsc,
-                      amount: req.body.amount,
-                      bankName: foundUser.bank.bankName,
-                      date: date + '/' + month,
-                      payment_id: random
-                    }
-                    withdrawal.push(newWithdraw);
-                    Admin.updateOne({email: process.env.EMAIL}, {$set:{withdrawals:withdrawal}}, function(err){
-                      if(err){
-                        console.log(err);
-                      }
-                    });
+    }
+    if (req.body.amount < 5) {
+      // Less than withdrawal limit
+      return res.status(200).send({
+        alertType: "warning",
+        alert: "true",
+        message: "Entered amount is below minimum withdrawal"
+      });
+    }
+    if (foundUser.earnings.total < 500){
+      return res.status(200).send({
+        alertType: "warning",
+        alert: "true",
+        message: "Earn above 500$ to enable withdrawal"
+      });
+    }
 
-                  }else{
+    //Process withdrawal
+    foundUser.earnings.available = foundUser.earnings.available - req.body.amount;
+    // History update
+    const random = String(Math.floor(Math.random()*999999999999));
+    const history = foundUser.history;
+    const transaction = foundUser.transaction;
+    const newHistory = {
+      status: "success",
+      amount: req.body.amount,
+      time: date + "/" + month+ "/" + year,
+      payment_id: random
+    };
+    history.push(newHistory);
 
-                    const newWithdraw = {
-                      name: foundUser.bank.name,
-                      email: foundUser.email,
-                      accountNumber: foundUser.bank.accountNumber,
-                      ifsc: foundUser.bank.ifsc,
-                      amount: req.body.amount,
-                      bankName: foundUser.bank.bankName,
-                      date: date + '/' + month
-                    }
-                    Admin.updateOne({email: process.env.EMAIL}, {$set:{withdrawals:newWithdraw}}, function(err){
-                      if(err){
-                        console.log(err);
-                      }
-                    });
-                  }
-                }
-              });
-              User.findOne({email: foundUser.email}, function(err, updatedUser){
-                if(foundUser.bank){
-                    res.render("withdraw", {user: updatedUser, bank: foundUser.bank, alert:{alertType:'success', alert:'Withdraw success'}});
-                }else{
-                    res.render("withdraw", {user: updatedUser,  alert:{alertType:'success', alert:'Withdraw success'}});
-                }
-              });
-            }
-          }
-        }
-      }else{
-        //One referral must
-        if(foundUser.bank){
-            res.render("withdraw", {user: foundUser, bank: foundUser.bank, alert:{alertType:'danger', alert:'One referral required for withdrawal'}});
-        }else{
-            res.render("withdraw", {user: foundUser,  alert:{alertType:'danger', alert:'One referral required for withdrawal'}});
-        }
-      }
+    foundUser.history = history;
+    // Transaction update
+    const transactions = foundUser.log;
+    const newTransaction = {
+      type: 'withdrawal',
+      amount: req.body.amount,
+      level: 'Wallet'
+    };
+    transactions.push(newTransaction);
+    foundUser.log = transactions;
+
+    foundUser.save();
+
+
+    res.status(200).send({
+      alertType: "success",
+      alert: "true",
+      message: 'Withdrawal Success',
+      balance: foundUser.earnings.available
     });
-  });
+  }
+
+
 });
 
 app.post('/api/activate', async(req, res) =>{
@@ -760,10 +691,21 @@ app.post('/api/activate', async(req, res) =>{
             await User.updateOne({email: foundUser.email}, {$set:{limit: updatedLimit}});
             await User.updateOne({email: foundUser.email}, {$set:{status:'Premium'}});
             await Payment.updateOne({rrn: req.body.transaction_id}, {$set:{status: "redeemed"}});
+            // Transaction update
+            const transactions = foundUser.log;
+            const newTransaction = {
+              type: 'subscription',
+              amount: req.body.amount,
+              level: 'Subscription'
+            };
+            transactions.push(newTransaction);
+            foundUser.log = transactions;
+
+            foundUser.save();
             res.status(200).send({
               alertType: "success",
               alert: "true",
-              message: "Payment successful, plan activated"
+              message: "Payment successful, your premium plan is now active"
             });
           }else{
             res.status(200).send({
